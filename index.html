@@ -1,0 +1,311 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Animation Control</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            text-align: center;
+            padding: 50px;
+            color: white;
+        }
+
+        /* Common animation class */
+        .animated {
+            animation-play-state: running;
+        }
+
+        /* When paused */
+        .paused .animated {
+            animation-play-state: paused;
+        }
+
+        /* Bounce */
+        .bounce {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-25px);
+            }
+        }
+
+        /* Rotate */
+        .rotate {
+            animation: rotate 4s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Pulse */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Button Style */
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            background: white;
+            color: black;
+            cursor: pointer;
+            margin-top: 40px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 class="animated bounce">Bouncing Text</h1>
+    <h2 class="animated rotate">🔄 Rotating Icon</h2>
+    <div class="animated pulse">💓 Pulsing Element</div>
+
+    <button id="toggleBtn">Pause Animations</button>
+
+    <script>
+        const button = document.getElementById("toggleBtn");
+        let isPaused = false;
+
+        button.addEventListener("click", () => {
+            document.body.classList.toggle("paused");
+
+            isPaused = !isPaused;
+            button.textContent = isPaused
+                ? "Play Animations"
+                : "Pause Animations";
+        });
+    </script>
+
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Universal Animation Controller</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(to right, #4e73df, #1cc88a);
+            color: white;
+        }
+
+        /* Animations */
+
+        .box {
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+        }
+
+        .bounce {
+            background: red;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-30px);
+            }
+        }
+
+        .rotate {
+            background: yellow;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box bounce"></div>
+    <div class="box rotate"></div>
+
+    <button id="toggleBtn">Pause Animations</button>
+
+    <script>
+        const button = document.getElementById("toggleBtn");
+        let isPaused = false;
+
+        button.addEventListener("click", () => {
+            const allElements = document.querySelectorAll("*");
+
+            allElements.forEach(el => {
+                const style = window.getComputedStyle(el);
+
+                if (style.animationName !== "none") {
+                    el.style.animationPlayState = isPaused ? "running" : "paused";
+                }
+            });
+
+            isPaused = !isPaused;
+            button.textContent = isPaused ? "Play Animations" : "Pause Animations";
+        });
+
+
+
+        (function () {
+            class UniversalAnimationController {
+                constructor(options = {}) {
+                    this.paused = false;
+                    this.position = options.position || "bottom-right";
+                    this.init();
+                }
+
+                init() {
+                    this.createButton();
+                    this.attachEvents();
+                    this.applyBaseStyles();
+                }
+
+                getAllAnimations() {
+                    return document.getAnimations({ subtree: true });
+                }
+
+                pause() {
+                    this.getAllAnimations().forEach(a => a.pause());
+                    this.paused = true;
+                    this.updateButton();
+                }
+
+                play() {
+                    this.getAllAnimations().forEach(a => a.play());
+                    this.paused = false;
+                    this.updateButton();
+                }
+
+                toggle() {
+                    this.paused ? this.play() : this.pause();
+                }
+
+                createButton() {
+                    // prevent duplicate button
+                    if (document.getElementById("universalAnimationToggle")) return;
+
+                    this.button = document.createElement("button");
+                    this.button.id = "universalAnimationToggle";
+                    this.button.textContent = "Pause Animations";
+                    this.button.setAttribute("aria-pressed", "false");
+
+                    document.body.appendChild(this.button);
+                }
+
+                attachEvents() {
+                    this.button.addEventListener("click", () => this.toggle());
+                }
+
+                updateButton() {
+                    this.button.textContent = this.paused
+                        ? "Play Animations"
+                        : "Pause Animations";
+
+                    this.button.setAttribute(
+                        "aria-pressed",
+                        this.paused ? "true" : "false"
+                    );
+                }
+
+                applyBaseStyles() {
+                    const style = document.createElement("style");
+                    style.innerHTML = `
+        #universalAnimationToggle {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          padding: 10px 18px;
+          border-radius: 30px;
+          border: none;
+          background: black;
+          color: white;
+          cursor: pointer;
+          z-index: 999999;
+        }
+      `;
+                    document.head.appendChild(style);
+                }
+            }
+
+            new UniversalAnimationController(); // 👈 direct init (no DOMContentLoaded)
+        })();
+
+    </script>
+
+
+
+
+</body>
+
+</html>
