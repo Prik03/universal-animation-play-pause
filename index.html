@@ -197,11 +197,11 @@
     <button id="toggleBtn">Pause Animations</button>
 
     <script>
-        const button = document.getElementById("toggleBtn");
+        const button = $("#toggleBtn");
         let isPaused = false;
 
-        button.addEventListener("click", () => {
-            const allElements = document.querySelectorAll("*");
+        button.on("click", () => {
+            const allElements = $("*");
 
             allElements.forEach(el => {
                 const style = window.getComputedStyle(el);
@@ -252,7 +252,6 @@
                 }
 
                 createButton() {
-                    // prevent duplicate button
                     if (document.getElementById("universalAnimationToggle")) return;
 
                     this.button = document.createElement("button");
@@ -298,7 +297,7 @@
                 }
             }
 
-            new UniversalAnimationController(); // 👈 direct init (no DOMContentLoaded)
+            new UniversalAnimationController();
         })();
 
     </script>
